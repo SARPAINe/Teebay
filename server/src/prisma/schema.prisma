@@ -50,7 +50,7 @@ model Transaction {
   buyerId      Int
   buyer        User           @relation(fields: [buyerId], references: [id]) // User who rented/bought the product
   startDate    DateTime       // Start date of the rental (or purchase time for BUY)
-  endDate      DateTime       // End date for rentals. (Should always be set for RENT transactions.)
+  endDate      DateTime?      // End date for rentals. (Should always be set for RENT transactions.)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 }

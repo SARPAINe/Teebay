@@ -7,6 +7,36 @@ import {
   verifyAndCheckTokenExpiry,
 } from "../../utils/authUtils";
 import { GraphQLError } from "graphql";
+import { Category, TransactionType } from "@prisma/client";
+
+// Define TypeScript interfaces for the input objects
+interface CreateUserInput {
+  email: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  password: string;
+}
+
+interface LoginInput {
+  email: string;
+  password: string;
+}
+
+interface CreateProductInput {
+  title: string;
+  description: string;
+  price: number;
+  category: Category[];
+}
+
+interface CreateTransactionInput {
+  type: TransactionType;
+  productId: number;
+  startDate: string;
+  endDate?: string;
+}
 
 const resolvers = {
   Query: {
@@ -53,7 +83,7 @@ const resolvers = {
   Mutation: {
     createUser: async (
       _: any,
-      { input }: { input: any },
+      { input }: { input: CreateUserInput },
       { prisma }: Context
     ) => {
       const { email, phone, firstName, lastName, address, password } = input;
@@ -78,7 +108,7 @@ const resolvers = {
     },
     login: async (
       _: any,
-      { email, password }: { email: string; password: string },
+      { email, password }: LoginInput,
       { prisma, res }: Context
     ) => {
       const user = await prisma.user.findUnique({ where: { email } });
@@ -136,7 +166,7 @@ const resolvers = {
     },
     createProduct: async (
       _: any,
-      { input }: { input: any },
+      { input }: { input: CreateProductInput },
       { prisma, req }: Context
     ) => {
       const accessToken = extractToken(req, "accessToken");
@@ -146,13 +176,6 @@ const resolvers = {
         });
       }
       const { title, description, price, category } = input;
-      console.log(
-        "🚀 ~ title, description, price, category:",
-        title,
-        description,
-        price,
-        category
-      );
       const userId = verifyAndCheckTokenExpiry(accessToken).userId;
       const product = await prisma.product.create({
         data: {
@@ -167,7 +190,7 @@ const resolvers = {
     },
     createTransaction: async (
       _: any,
-      { input }: { input: any },
+      { input }: { input: CreateTransactionInput },
       { prisma, req }: Context
     ) => {
       const accessToken = extractToken(req, "accessToken");
@@ -178,9 +201,36 @@ const resolvers = {
       }
       const buyerId = verifyAndCheckTokenExpiry(accessToken).userId;
       const { type, productId, startDate, endDate } = input;
-      const transaction = await prisma.transaction.create({
-        data: { type, productId, buyerId, startDate, endDate },
+      const product = await prisma.product.findUnique({
+        where: { id: productId },
+        select: { userId: true },
       });
+      if (!product) {
+        throw new GraphQLError("Product not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+      if (product?.userId === buyerId) {
+        throw new GraphQLError("You cannot buy your own product", {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
+      }
+      let transaction;
+      if (type === TransactionType.BUY) {
+        transaction = await prisma.transaction.create({
+          data: { type, productId, buyerId, startDate },
+        });
+      } else if (type === TransactionType.RENT) {
+        if (!endDate) {
+          throw new GraphQLError("End date is required for rent transactions", {
+            extensions: { code: "BAD_USER_INPUT" },
+          });
+        } else {
+          transaction = await prisma.transaction.create({
+            data: { type, productId, buyerId, startDate, endDate },
+          });
+        }
+      }
       return transaction;
     },
   },
