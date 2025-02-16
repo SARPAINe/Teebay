@@ -7,20 +7,7 @@ import {
   extractToken,
   verifyAndCheckTokenExpiry,
 } from "../../utils/authUtils";
-
-interface CreateUserInput {
-  email: string;
-  phone: string;
-  firstName: string;
-  lastName: string;
-  address: string;
-  password: string;
-}
-
-interface LoginInput {
-  email: string;
-  password: string;
-}
+import { CreateUserInput, LoginInput } from "../../types";
 
 const userResolvers = {
   Query: {

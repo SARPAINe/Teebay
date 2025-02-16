@@ -1,22 +1,39 @@
-export type User = {
-  id: string;
-  name: string;
+import { Category, RentCategory, TransactionType } from "@prisma/client";
+export interface CreateUserInput {
   email: string;
-};
+  phone: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  password: string;
+}
 
-export type Post = {
-  id: string;
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface CreateProductInput {
   title: string;
-  content: string;
-  authorId: string;
-};
+  description: string;
+  price: number;
+  category: Category[];
+  rentPrice: number;
+  rentCategory: RentCategory;
+}
 
-export type Query = {
-  users: User[];
-  posts: Post[];
-};
+export interface EditProductInput {
+  title?: string;
+  description?: string;
+  price?: number;
+  category?: Category[];
+  rentPrice?: number;
+  rentCategory?: RentCategory;
+}
 
-export type Mutation = {
-  createUser(name: string, email: string): User;
-  createPost(title: string, content: string, authorId: string): Post;
-};
+export interface CreateTransactionInput {
+  type: TransactionType;
+  productId: number;
+  startDate: string;
+  endDate?: string;
+}

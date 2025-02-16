@@ -1,14 +1,8 @@
 import { Context } from "../../context";
 import { GraphQLError } from "graphql";
 import { extractToken, verifyAndCheckTokenExpiry } from "../../utils/authUtils";
+import { CreateTransactionInput } from "../../types";
 import { TransactionType } from "@prisma/client";
-
-interface CreateTransactionInput {
-  type: TransactionType;
-  productId: number;
-  startDate: string;
-  endDate?: string;
-}
 
 const transactionResolvers = {
   Query: {

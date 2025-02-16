@@ -1,25 +1,7 @@
 import { Context } from "../../context";
 import { GraphQLError } from "graphql";
 import { extractToken, verifyAndCheckTokenExpiry } from "../../utils/authUtils";
-import { Category, RentCategory } from "@prisma/client";
-
-interface CreateProductInput {
-  title: string;
-  description: string;
-  price: number;
-  category: Category[];
-  rentPrice: number;
-  rentCategory: RentCategory;
-}
-
-interface EditProductInput {
-  title?: string;
-  description?: string;
-  price?: number;
-  category?: Category[];
-  rentPrice?: number;
-  rentCategory?: RentCategory;
-}
+import { CreateProductInput, EditProductInput } from "../../types";
 
 const productResolvers = {
   Query: {
