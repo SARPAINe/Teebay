@@ -16,7 +16,7 @@ const typeDefs = `#graphql
         title: String!
         description: String!
         price: Float!
-        rendtPrice:Float!
+        rentPrice:Float!
         category: [Category!]!
         rentCategory:RentCategory!
         createdAt: String!
@@ -68,6 +68,8 @@ const typeDefs = `#graphql
         description: String!
         price: Float!
         category: [Category!]!  # Update to accept an array of enums
+        rentPrice:Float!
+        rentCategory:RentCategory!
     }
 
     input EditProductInput{
