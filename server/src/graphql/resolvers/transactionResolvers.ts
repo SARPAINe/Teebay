@@ -38,6 +38,7 @@ const transactionResolvers = {
       }
       const buyerId = verifyAndCheckTokenExpiry(accessToken).userId;
       const { type, productId, startDate, endDate } = input;
+
       const product = await prisma.product.findUnique({
         where: { id: productId },
         select: { userId: true },
@@ -47,15 +48,23 @@ const transactionResolvers = {
           extensions: { code: "NOT_FOUND" },
         });
       }
-      if (product?.userId === buyerId) {
+      if (product.userId === buyerId) {
         throw new GraphQLError("You cannot buy your own product", {
           extensions: { code: "BAD_USER_INPUT" },
         });
       }
+
       let transaction;
       if (type === TransactionType.BUY) {
-        transaction = await prisma.transaction.create({
-          data: { type, productId, buyerId, startDate },
+        transaction = await prisma.$transaction(async (prisma) => {
+          const createdTransaction = await prisma.transaction.create({
+            data: { type, productId, buyerId, startDate },
+          });
+          await prisma.product.update({
+            where: { id: productId },
+            data: { owner: buyerId },
+          });
+          return createdTransaction;
         });
       } else if (type === TransactionType.RENT) {
         if (!endDate) {
@@ -68,6 +77,7 @@ const transactionResolvers = {
           });
         }
       }
+
       return transaction;
     },
   },

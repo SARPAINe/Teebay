@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import config from "../config";
 import { Request } from "express";
+import { GraphQLError } from "graphql";
 
 export const generateAccessToken = (userId: number): string => {
   return jwt.sign({ userId }, config.jwtSecret!, { expiresIn: "15m" });
@@ -28,7 +29,9 @@ export const verifyAndCheckTokenExpiry = (
     exp: number;
   };
   if (Date.now() >= decodedToken.exp * 1000) {
-    throw new Error("Token expired");
+    throw new GraphQLError("Token expired", {
+      extensions: { code: "UNAUTHENTICATED" },
+    });
   }
   return { userId: decodedToken.userId };
 };

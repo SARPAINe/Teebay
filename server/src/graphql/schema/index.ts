@@ -23,6 +23,7 @@ const typeDefs = `#graphql
         isAvailable: Boolean!
         transactions: [Transaction!]
         creator: User!
+        owner: Int!
     }
 
     type Transaction {
@@ -84,7 +85,6 @@ const typeDefs = `#graphql
     input CreateTransactionInput {
         type: TransactionType!
         productId: Int!
-        buyerId: Int!
         startDate: String!
         endDate: String
     }
@@ -93,6 +93,11 @@ const typeDefs = `#graphql
         users: [User!]
         user(id: Int!): User
         products: [Product!]!
+        userAvailableProducts: [Product!]!
+        borrowedProducts: [Product!]!
+        lentProducts: [Product!]!
+        boughtProducts: [Product!]!
+        soldProducts: [Product!]!
         product(id: Int!): Product
         transactions: [Transaction!]!
         transaction(id: Int!): Transaction

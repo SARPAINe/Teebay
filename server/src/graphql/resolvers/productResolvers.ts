@@ -2,11 +2,117 @@ import { Context } from "../../context";
 import { GraphQLError } from "graphql";
 import { extractToken, verifyAndCheckTokenExpiry } from "../../utils/authUtils";
 import { CreateProductInput, EditProductInput } from "../../types";
+import { TransactionType } from "@prisma/client";
 
 const productResolvers = {
   Query: {
     products: async (_: any, __: any, { prisma }: Context) =>
       await prisma.product.findMany(),
+    userAvailableProducts: async (
+      _: any,
+      __: any,
+      { prisma, req }: Context
+    ) => {
+      const accessToken = extractToken(req, "accessToken");
+      if (!accessToken) {
+        throw new GraphQLError("No access token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const products = await prisma.product.findMany({
+        where: { userId, owner: userId },
+      });
+      return products;
+    },
+    borrowedProducts: async (_: any, __: any, { prisma, req }: Context) => {
+      const accessToken = extractToken(req, "accessToken");
+      if (!accessToken) {
+        throw new GraphQLError("No access token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const today = new Date();
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          buyerId: userId,
+          type: TransactionType.RENT,
+          endDate: {
+            gt: today,
+          },
+        },
+        include: {
+          product: true,
+        },
+      });
+      const products = transactions.map((transaction) => transaction.product);
+      return products;
+    },
+    lentProducts: async (_: any, __: any, { prisma, req }: Context) => {
+      const accessToken = extractToken(req, "accessToken");
+      if (!accessToken) {
+        throw new GraphQLError("No access token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const today = new Date();
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          product: { owner: userId },
+          type: TransactionType.RENT,
+          endDate: {
+            gt: today,
+          },
+        },
+        include: {
+          product: true,
+        },
+      });
+      const products = transactions.map((transaction) => transaction.product);
+      return products;
+    },
+    boughtProducts: async (_: any, __: any, { prisma, req }: Context) => {
+      const accessToken = extractToken(req, "accessToken");
+      if (!accessToken) {
+        throw new GraphQLError("No access token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          buyerId: userId,
+          type: TransactionType.BUY,
+        },
+        include: {
+          product: true,
+        },
+      });
+      const products = transactions.map((transaction) => transaction.product);
+      return products;
+    },
+    soldProducts: async (_: any, __: any, { prisma, req }: Context) => {
+      const accessToken = extractToken(req, "accessToken");
+      if (!accessToken) {
+        throw new GraphQLError("No access token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          product: { userId },
+          type: TransactionType.BUY,
+        },
+        include: {
+          product: true,
+        },
+      });
+      const products = transactions.map((transaction) => transaction.product);
+      return products;
+    },
     product: async (_: any, { id }: { id: number }, { prisma }: Context) => {
       const product = await prisma.product.findUnique({ where: { id } });
       if (!product) {
@@ -50,6 +156,7 @@ const productResolvers = {
           category,
           rentPrice,
           rentCategory,
+          owner: userId,
           creator: { connect: { id: userId } },
         },
       });
