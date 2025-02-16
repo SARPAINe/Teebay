@@ -15,7 +15,8 @@ model User {
   lastName  String
   address   String
   password  String
-  products  Product[]
+  products  Product[] //prodcuts created by the user
+  transactions Transaction[] // Transactions (buying/renting) made by the user
 }
 
 model Product {
@@ -25,8 +26,23 @@ model Product {
   price       Float
   category    Category
   createdAt   DateTime @default(now())
+  isAvailable Boolean  @default(true)  //By default, all new products are available
+  transactions Transaction[] // Transactions (buying/renting) made on the product
   userId      Int
   creator     User     @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id           Int           @id @default(autoincrement())
+  type         TransactionType // Can be either BUY or RENT
+  productId    Int
+  product      Product        @relation(fields: [productId], references: [id]) // The product being rented/purchased
+  buyerId      Int
+  buyer        User           @relation(fields: [buyerId], references: [id]) // User who rented/bought the product
+  startDate    DateTime       // Start date of the rental (or purchase time for BUY)
+  endDate      DateTime       // End date for rentals. (Should always be set for RENT transactions.)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 enum Category {
@@ -36,4 +52,9 @@ enum Category {
   SPORTING_GOODS
   OUTDOOR
   TOYS
+}
+
+enum TransactionType {
+  BUY
+  RENT
 }
