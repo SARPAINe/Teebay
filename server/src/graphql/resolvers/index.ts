@@ -159,7 +159,7 @@ const resolvers = {
           title,
           description,
           price,
-          category: [category],
+          category,
           creator: { connect: { id: userId } },
         },
       });

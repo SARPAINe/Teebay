@@ -61,7 +61,7 @@ const typeDefs = `#graphql
         title: String!
         description: String!
         price: Float!
-        category: Category!
+        category: [Category!]!  # Update to accept an array of enums
     }
 
     input CreateTransactionInput {
