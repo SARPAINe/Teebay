@@ -1,5 +1,10 @@
 import bcrypt from "bcrypt";
 import { Context } from "../../context";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyAndCheckTokenExpiry,
+} from "../../utils/authUtils";
 
 const resolvers = {
   Query: {
@@ -35,6 +40,52 @@ const resolvers = {
         },
       });
       return user;
+    },
+    login: async (
+      _: any,
+      { email, password }: { email: string; password: string },
+      { prisma, res }: Context
+    ) => {
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new Error("Invalid credentials");
+      }
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = await generateRefreshToken(user.id, prisma);
+      res.cookie("accessToken", accessToken, { httpOnly: true });
+      res.cookie("refreshToken", refreshToken, { httpOnly: true });
+      return { accessToken, refreshToken };
+    },
+    logout: async (_: any, __: any, { prisma, req, res }: Context) => {
+      const { refreshToken } = req.cookies;
+      if (refreshToken) {
+        await prisma.refreshToken.deleteMany({
+          where: { token: refreshToken },
+        });
+      }
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+      return true;
+    },
+    refreshToken: async (_: any, __: any, { prisma, req, res }: Context) => {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken) {
+        throw new Error("No refresh token provided");
+      }
+      try {
+        const payload = verifyAndCheckTokenExpiry(refreshToken);
+        const storedToken = await prisma.refreshToken.findUnique({
+          where: { token: refreshToken },
+        });
+        if (!storedToken) {
+          throw new Error("Invalid refresh token");
+        }
+        const newAccessToken = generateAccessToken(payload.userId);
+        res.cookie("accessToken", newAccessToken, { httpOnly: true });
+        return { accessToken: newAccessToken, refreshToken };
+      } catch (error) {
+        throw new Error("Invalid refresh token");
+      }
     },
   },
 };

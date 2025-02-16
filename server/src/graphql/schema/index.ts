@@ -86,6 +86,14 @@ const typeDefs = `#graphql
         createUser(input: CreateUserInput!): User!
         createProduct(input: CreateProductInput!): Product!
         createTransaction(input: CreateTransactionInput!): Transaction!
+        login(email: String!, password: String!): AuthPayload!
+        logout: Boolean!
+        refreshToken: AuthPayload!
+    }
+
+    type AuthPayload {
+        accessToken: String!
+        refreshToken: String!
     }
 `;
 
