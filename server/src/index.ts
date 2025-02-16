@@ -4,7 +4,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import config from "./config";
 import typeDefs from "./graphql/schema";
-import { resolvers } from "./graphql/resolvers";
+import resolvers from "./graphql/resolvers";
 import { createContext, Context } from "./context";
 
 const app = express();
