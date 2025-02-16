@@ -87,6 +87,32 @@ const resolvers = {
         throw new Error("Invalid refresh token");
       }
     },
+    createProduct: async (
+      _: any,
+      { input }: { input: any },
+      { prisma, req }: Context
+    ) => {
+      const { title, description, price, category } = input;
+      const { accessToken } = req.cookies;
+      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const product = await prisma.product.create({
+        data: { title, description, price, category, userId },
+      });
+      return product;
+    },
+    createTransaction: async (
+      _: any,
+      { input }: { input: any },
+      { prisma, req }: Context
+    ) => {
+      const { accessToken } = req.cookies;
+      const buyerId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const { type, productId, startDate, endDate } = input;
+      const transaction = await prisma.transaction.create({
+        data: { type, productId, buyerId, startDate, endDate },
+      });
+      return transaction;
+    },
   },
 };
 
