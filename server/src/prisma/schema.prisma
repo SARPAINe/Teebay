@@ -34,6 +34,8 @@ model Product {
   title       String   @unique
   description String
   price       Float
+  rentPrice   Float    @default(0)
+  rentCategory RentCategory @default(DAILY)
   category    Category[]
   createdAt   DateTime @default(now())
   isAvailable Boolean  @default(true)  //By default, all new products are available
@@ -64,7 +66,13 @@ enum Category {
   TOYS
 }
 
+enum RentCategory {
+  DAILY
+  HOURLY
+}
+
 enum TransactionType {
   BUY
   RENT
 }
+

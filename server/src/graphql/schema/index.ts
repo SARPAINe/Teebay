@@ -16,7 +16,9 @@ const typeDefs = `#graphql
         title: String!
         description: String!
         price: Float!
+        rendtPrice:Float!
         category: [Category!]!
+        rentCategory:RentCategory!
         createdAt: String!
         isAvailable: Boolean!
         transactions: [Transaction!]
@@ -43,6 +45,10 @@ const typeDefs = `#graphql
         TOYS
     }
 
+    enum RentCategory{
+        DAILY
+        HOURLY}
+
     enum TransactionType {
         BUY
         RENT
@@ -62,6 +68,15 @@ const typeDefs = `#graphql
         description: String!
         price: Float!
         category: [Category!]!  # Update to accept an array of enums
+    }
+
+    input EditProductInput{
+        title: String
+        description: String
+        price: Float
+        category: [Category!]
+        rentPrice:Float
+        rentCategory:RentCategory
     }
 
     input CreateTransactionInput {
@@ -84,6 +99,8 @@ const typeDefs = `#graphql
     type Mutation {
         createUser(input: CreateUserInput!): User!
         createProduct(input: CreateProductInput!): Product!
+        editProduct(id:ID!,editInput:EditProductInput): Product!
+        deleteProduct(id:ID!): Product!
         createTransaction(input: CreateTransactionInput!): Transaction!
         login(email: String!, password: String!): AuthPayload!
         logout: Boolean!
