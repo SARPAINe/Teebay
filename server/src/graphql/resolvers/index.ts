@@ -5,21 +5,49 @@ import {
   generateRefreshToken,
   verifyAndCheckTokenExpiry,
 } from "../../utils/authUtils";
+import { GraphQLError } from "graphql";
 
 const resolvers = {
   Query: {
     users: async (_: any, __: any, { prisma }: Context) =>
       await prisma.user.findMany(),
-    user: async (_: any, { id }: { id: number }, { prisma }: Context) =>
-      await prisma.user.findUnique({ where: { id } }),
+    user: async (_: any, { id }: { id: number }, { prisma }: Context) => {
+      const user = await prisma.user.findUnique({ where: { id } });
+      if (!user) {
+        throw new GraphQLError("User not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+      return user;
+    },
     products: async (_: any, __: any, { prisma }: Context) =>
       await prisma.product.findMany(),
-    product: async (_: any, { id }: { id: number }, { prisma }: Context) =>
-      await prisma.product.findUnique({ where: { id } }),
+    product: async (_: any, { id }: { id: number }, { prisma }: Context) => {
+      const product = await prisma.product.findUnique({ where: { id } });
+      if (!product) {
+        throw new GraphQLError("Product not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+      return product;
+    },
     transactions: async (_: any, __: any, { prisma }: Context) =>
       await prisma.transaction.findMany(),
-    transaction: async (_: any, { id }: { id: number }, { prisma }: Context) =>
-      await prisma.transaction.findUnique({ where: { id } }),
+    transaction: async (
+      _: any,
+      { id }: { id: number },
+      { prisma }: Context
+    ) => {
+      const transaction = await prisma.transaction.findUnique({
+        where: { id },
+      });
+      if (!transaction) {
+        throw new GraphQLError("Transaction not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+      return transaction;
+    },
   },
   Mutation: {
     createUser: async (
@@ -28,6 +56,12 @@ const resolvers = {
       { prisma }: Context
     ) => {
       const { email, phone, firstName, lastName, address, password } = input;
+      const existingUser = await prisma.user.findUnique({ where: { email } });
+      if (existingUser) {
+        throw new GraphQLError("Email already in use", {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
+      }
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await prisma.user.create({
         data: {
@@ -48,7 +82,9 @@ const resolvers = {
     ) => {
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user || !(await bcrypt.compare(password, user.password))) {
-        throw new Error("Invalid credentials");
+        throw new GraphQLError("Invalid credentials", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
       }
       const accessToken = generateAccessToken(user.id);
       const refreshToken = await generateRefreshToken(user.id, prisma);
@@ -70,21 +106,27 @@ const resolvers = {
     refreshToken: async (_: any, __: any, { prisma, req, res }: Context) => {
       const { refreshToken } = req.cookies;
       if (!refreshToken) {
-        throw new Error("No refresh token provided");
+        throw new GraphQLError("No refresh token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
+      const storedToken = await prisma.refreshToken.findUnique({
+        where: { token: refreshToken },
+      });
+      if (!storedToken) {
+        throw new GraphQLError("Invalid refresh token", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
       }
       try {
-        const payload = verifyAndCheckTokenExpiry(refreshToken);
-        const storedToken = await prisma.refreshToken.findUnique({
-          where: { token: refreshToken },
-        });
-        if (!storedToken) {
-          throw new Error("Invalid refresh token");
-        }
-        const newAccessToken = generateAccessToken(payload.userId);
+        const { userId } = verifyAndCheckTokenExpiry(refreshToken);
+        const newAccessToken = generateAccessToken(userId);
         res.cookie("accessToken", newAccessToken, { httpOnly: true });
         return { accessToken: newAccessToken, refreshToken };
       } catch (error) {
-        throw new Error("Invalid refresh token");
+        throw new GraphQLError("Invalid refresh token", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
       }
     },
     createProduct: async (
