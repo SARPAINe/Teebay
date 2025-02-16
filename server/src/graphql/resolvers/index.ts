@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { Context } from "../../context";
 import {
+  extractToken,
   generateAccessToken,
   generateRefreshToken,
   verifyAndCheckTokenExpiry,
@@ -93,18 +94,22 @@ const resolvers = {
       return { accessToken, refreshToken };
     },
     logout: async (_: any, __: any, { prisma, req, res }: Context) => {
-      const { refreshToken } = req.cookies;
-      if (refreshToken) {
-        await prisma.refreshToken.deleteMany({
-          where: { token: refreshToken },
+      const refreshToken = extractToken(req, "refreshToken");
+      if (!refreshToken) {
+        throw new GraphQLError("No refresh token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
         });
       }
+      await prisma.refreshToken.deleteMany({
+        where: { token: refreshToken },
+      });
+
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
       return true;
     },
     refreshToken: async (_: any, __: any, { prisma, req, res }: Context) => {
-      const { refreshToken } = req.cookies;
+      const refreshToken = extractToken(req, "refreshToken");
       if (!refreshToken) {
         throw new GraphQLError("No refresh token provided", {
           extensions: { code: "UNAUTHENTICATED" },
@@ -134,11 +139,23 @@ const resolvers = {
       { input }: { input: any },
       { prisma, req }: Context
     ) => {
+      const accessToken = extractToken(req, "accessToken");
+      if (!accessToken) {
+        throw new GraphQLError("No access token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
       const { title, description, price, category } = input;
-      const { accessToken } = req.cookies;
+      console.log(
+        "🚀 ~ title, description, price, category:",
+        title,
+        description,
+        price,
+        category
+      );
       const userId = verifyAndCheckTokenExpiry(accessToken).userId;
       const product = await prisma.product.create({
-        data: { title, description, price, category, userId },
+        data: { title, description, price, category: [category], userId },
       });
       return product;
     },
@@ -147,7 +164,12 @@ const resolvers = {
       { input }: { input: any },
       { prisma, req }: Context
     ) => {
-      const { accessToken } = req.cookies;
+      const accessToken = extractToken(req, "accessToken");
+      if (!accessToken) {
+        throw new GraphQLError("No access token provided", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
       const buyerId = verifyAndCheckTokenExpiry(accessToken).userId;
       const { type, productId, startDate, endDate } = input;
       const transaction = await prisma.transaction.create({
