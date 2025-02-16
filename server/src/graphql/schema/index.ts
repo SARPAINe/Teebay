@@ -16,7 +16,7 @@ const typeDefs = `#graphql
         title: String!
         description: String!
         price: Float!
-        category: Category!
+        category: [Category!]!
         createdAt: String!
         isAvailable: Boolean!
         transactions: [Transaction!]
@@ -62,7 +62,6 @@ const typeDefs = `#graphql
         description: String!
         price: Float!
         category: Category!
-        userId: Int!
     }
 
     input CreateTransactionInput {

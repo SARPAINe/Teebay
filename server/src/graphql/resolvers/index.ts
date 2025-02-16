@@ -155,7 +155,13 @@ const resolvers = {
       );
       const userId = verifyAndCheckTokenExpiry(accessToken).userId;
       const product = await prisma.product.create({
-        data: { title, description, price, category: [category], userId },
+        data: {
+          title,
+          description,
+          price,
+          category: [category],
+          creator: { connect: { id: userId } },
+        },
       });
       return product;
     },

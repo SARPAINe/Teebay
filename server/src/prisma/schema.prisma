@@ -31,10 +31,10 @@ model RefreshToken {
 
 model Product {
   id          Int      @id @default(autoincrement())
-  title       String
+  title       String   @unique
   description String
   price       Float
-  category    Category
+  category    Category[]
   createdAt   DateTime @default(now())
   isAvailable Boolean  @default(true)  //By default, all new products are available
   transactions Transaction[] // Transactions (buying/renting) made on the product
