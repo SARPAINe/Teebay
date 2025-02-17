@@ -41,14 +41,14 @@ const transactionResolvers = {
 
       const product = await prisma.product.findUnique({
         where: { id: productId },
-        select: { userId: true },
+        select: { creatorId: true },
       });
       if (!product) {
         throw new GraphQLError("Product not found", {
           extensions: { code: "NOT_FOUND" },
         });
       }
-      if (product.userId === buyerId) {
+      if (product.creatorId === buyerId) {
         throw new GraphQLError("You cannot buy your own product", {
           extensions: { code: "BAD_USER_INPUT" },
         });

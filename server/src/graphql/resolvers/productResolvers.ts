@@ -21,7 +21,7 @@ const productResolvers = {
       }
       const userId = verifyAndCheckTokenExpiry(accessToken).userId;
       const products = await prisma.product.findMany({
-        where: { userId, owner: userId },
+        where: { creatorId: userId, owner: userId },
       });
       return products;
     },
@@ -103,7 +103,7 @@ const productResolvers = {
       const userId = verifyAndCheckTokenExpiry(accessToken).userId;
       const transactions = await prisma.transaction.findMany({
         where: {
-          product: { userId },
+          product: { creatorId: userId },
           type: TransactionType.BUY,
         },
         include: {
@@ -183,7 +183,7 @@ const productResolvers = {
           extensions: { code: "NOT_FOUND" },
         });
       }
-      if (existingProduct.userId !== userId) {
+      if (existingProduct.creatorId !== userId) {
         throw new GraphQLError("Not authorized to edit this product", {
           extensions: { code: "FORBIDDEN" },
         });
@@ -215,7 +215,7 @@ const productResolvers = {
           extensions: { code: "NOT_FOUND" },
         });
       }
-      if (existingProduct.userId !== userId) {
+      if (existingProduct.creatorId !== userId) {
         throw new GraphQLError("Not authorized to delete this product", {
           extensions: { code: "FORBIDDEN" },
         });

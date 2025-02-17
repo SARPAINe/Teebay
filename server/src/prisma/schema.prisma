@@ -40,8 +40,8 @@ model Product {
   createdAt   DateTime @default(now())
   isAvailable Boolean  @default(true)  //By default, all new products are available
   transactions Transaction[] // Transactions (buying/renting) made on the product
-  userId      Int //creator id
-  creator     User     @relation(fields: [userId], references: [id])
+  creatorId      Int //creator id
+  creator     User     @relation(fields: [creatorId], references: [id])
   owner       Int      @default(0) //owner id
 }
 
