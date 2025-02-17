@@ -56,7 +56,7 @@ const transactionResolvers = {
           });
           await prisma.product.update({
             where: { id: productId },
-            data: { owner: buyerId },
+            data: { owner: buyerId, isAvailable: false },
           });
           return createdTransaction;
         });

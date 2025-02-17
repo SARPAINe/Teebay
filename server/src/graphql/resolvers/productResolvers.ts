@@ -7,7 +7,9 @@ import { TransactionType } from "@prisma/client";
 const productResolvers = {
   Query: {
     products: async (_: any, __: any, { prisma }: Context) =>
-      await prisma.product.findMany(),
+      await prisma.product.findMany({
+        where: { isAvailable: true },
+      }),
     userAvailableProducts: async (
       _: any,
       __: any,

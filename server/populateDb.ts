@@ -123,7 +123,7 @@ async function main() {
   });
   await prisma.product.update({
     where: { id: user1BuysProductFromUser2.id },
-    data: { owner: user1.id },
+    data: { owner: user1.id, isAvailable: false },
   });
 
   // User1 borrows 1 product from User2
@@ -150,7 +150,7 @@ async function main() {
   });
   await prisma.product.update({
     where: { id: user2BuysProductFromUser1.id },
-    data: { owner: user2.id },
+    data: { owner: user2.id, isAvailable: false },
   });
 
   // User2 borrows 1 product from User1
