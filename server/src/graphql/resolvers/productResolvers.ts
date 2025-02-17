@@ -1,6 +1,6 @@
 import { Context } from "../../context";
 import { GraphQLError } from "graphql";
-import { extractToken, verifyAndCheckTokenExpiry } from "../../utils/authUtils";
+import { getAuthenticatedUserId } from "../../utils/authUtils";
 import { CreateProductInput, EditProductInput } from "../../types";
 import { TransactionType } from "@prisma/client";
 
@@ -13,26 +13,14 @@ const productResolvers = {
       __: any,
       { prisma, req }: Context
     ) => {
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const userId = getAuthenticatedUserId(req);
       const products = await prisma.product.findMany({
         where: { creatorId: userId, owner: userId },
       });
       return products;
     },
     borrowedProducts: async (_: any, __: any, { prisma, req }: Context) => {
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const userId = getAuthenticatedUserId(req);
       const today = new Date();
       const transactions = await prisma.transaction.findMany({
         where: {
@@ -50,13 +38,7 @@ const productResolvers = {
       return products;
     },
     lentProducts: async (_: any, __: any, { prisma, req }: Context) => {
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const userId = getAuthenticatedUserId(req);
       const today = new Date();
       const transactions = await prisma.transaction.findMany({
         where: {
@@ -74,13 +56,7 @@ const productResolvers = {
       return products;
     },
     boughtProducts: async (_: any, __: any, { prisma, req }: Context) => {
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const userId = getAuthenticatedUserId(req);
       const transactions = await prisma.transaction.findMany({
         where: {
           buyerId: userId,
@@ -94,13 +70,7 @@ const productResolvers = {
       return products;
     },
     soldProducts: async (_: any, __: any, { prisma, req }: Context) => {
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const userId = getAuthenticatedUserId(req);
       const transactions = await prisma.transaction.findMany({
         where: {
           product: { creatorId: userId },
@@ -129,15 +99,9 @@ const productResolvers = {
       { input }: { input: CreateProductInput },
       { prisma, req }: Context
     ) => {
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
+      const userId = getAuthenticatedUserId(req);
       const { title, description, price, category, rentPrice, rentCategory } =
         input;
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
       const existingProduct = await prisma.product.findFirst({
         where: {
           title,
@@ -168,13 +132,7 @@ const productResolvers = {
       { prisma, req }: Context
     ) => {
       const productId = Number(id); // Ensure the id is treated as a number
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const userId = getAuthenticatedUserId(req);
       const existingProduct = await prisma.product.findUnique({
         where: { id: productId },
       });
@@ -200,13 +158,7 @@ const productResolvers = {
       { prisma, req }: Context
     ) => {
       const productId = Number(id); // Ensure the id is treated as a number
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const userId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const userId = getAuthenticatedUserId(req);
       const existingProduct = await prisma.product.findUnique({
         where: { id: productId },
       });

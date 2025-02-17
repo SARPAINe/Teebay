@@ -1,8 +1,8 @@
 import { Context } from "../../context";
 import { GraphQLError } from "graphql";
-import { extractToken, verifyAndCheckTokenExpiry } from "../../utils/authUtils";
 import { CreateTransactionInput } from "../../types";
 import { TransactionType } from "@prisma/client";
+import { getAuthenticatedUserId } from "../../utils/authUtils";
 
 const transactionResolvers = {
   Query: {
@@ -30,13 +30,7 @@ const transactionResolvers = {
       { input }: { input: CreateTransactionInput },
       { prisma, req }: Context
     ) => {
-      const accessToken = extractToken(req, "accessToken");
-      if (!accessToken) {
-        throw new GraphQLError("No access token provided", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
-      }
-      const buyerId = verifyAndCheckTokenExpiry(accessToken).userId;
+      const buyerId = getAuthenticatedUserId(req);
       const { type, productId, startDate, endDate } = input;
 
       const product = await prisma.product.findUnique({

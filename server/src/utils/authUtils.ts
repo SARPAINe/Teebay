@@ -46,10 +46,20 @@ export const extractToken = (
   // If not found in cookies, check headers
   if (!token) {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
+    if (authHeader?.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
     }
   }
 
   return token || null;
+};
+
+export const getAuthenticatedUserId = (req: Request): number => {
+  const accessToken = extractToken(req, "accessToken");
+  if (!accessToken) {
+    throw new GraphQLError("No access token provided", {
+      extensions: { code: "UNAUTHENTICATED" },
+    });
+  }
+  return verifyAndCheckTokenExpiry(accessToken).userId;
 };
