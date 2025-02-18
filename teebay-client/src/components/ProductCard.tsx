@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ProductCardProps } from "../types";
 import { convertTimestampToReadableDate } from "../utils/helper";
 import { useEffect, useRef, useState } from "react";
+import { Trash } from "lucide-react";
 
 const ProductCard = ({
   id,
@@ -10,7 +11,8 @@ const ProductCard = ({
   price,
   description,
   createdAt,
-}: ProductCardProps) => {
+  onDelete,
+}: ProductCardProps & { onDelete: (id: string) => void }) => {
   const navigate = useNavigate();
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -30,9 +32,14 @@ const ProductCard = ({
     navigate(`/products/${id}`);
   };
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(String(id));
+  };
+
   return (
     <div
-      className="p-4 border border-gray-200 rounded-md shadow-md hover:shadow-lg cursor-pointer transition-shadow"
+      className="p-4 border border-gray-200 rounded-md shadow-md hover:shadow-lg cursor-pointer transition-shadow relative"
       onClick={handleClick}
     >
       <h2 className="text-xl font-bold">{title}</h2>
@@ -54,6 +61,12 @@ const ProductCard = ({
           Date Posted :{convertTimestampToReadableDate(createdAt!)}
         </p>
       )}
+      <button
+        className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+        onClick={handleDelete}
+      >
+        <Trash />
+      </button>
     </div>
   );
 };
