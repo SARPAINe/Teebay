@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { REFRESH_TOKEN_MUTATION } from "../graphql/queries";
+import { REFRESH_TOKEN_MUTATION } from "../graphql/mutation";
 import { setAccessToken } from "../utils/tokenManager";
 
 // Create a separate ApolloClient for refreshing tokens

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@apollo/client";
-import { REGISTER_MUTATION } from "../graphql/queries";
+import { REGISTER_MUTATION } from "../graphql/mutation";
 import InputField from "../components/InputField";
 import { toast } from "react-toastify";
 import Button from "../components/Button";
