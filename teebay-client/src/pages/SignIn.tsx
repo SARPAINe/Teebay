@@ -72,7 +72,7 @@ const SignIn = () => {
         <p className="mt-6 text-center text-sm text-gray-600">
           Don't have an account?{" "}
           <Link
-            to="/register"
+            to="/signup"
             className="text-[#28b1bd] font-semibold hover:underline"
           >
             Signup

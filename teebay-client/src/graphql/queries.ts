@@ -5,7 +5,11 @@ export const GET_AVAILABLE_PRODUCTS = gql`
     products {
       id
       title
+      category
       price
+      description
+      category
+      createdAt
     }
   }
 `;
@@ -15,6 +19,20 @@ export const LOGIN_MUTATION = gql`
     login(email: $email, password: $password) {
       accessToken
       refreshToken
+    }
+  }
+`;
+
+export const REGISTER_MUTATION = gql`
+  mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      id
+      email
+      phone
+      firstName
+      lastName
+      address
+      password
     }
   }
 `;

@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { FieldValues, UseFormRegister, Path } from "react-hook-form";
+import {
+  FieldValues,
+  UseFormRegister,
+  Path,
+  FieldError,
+} from "react-hook-form";
 
 interface InputFieldProps<T extends FieldValues> {
   id: keyof T;
@@ -8,7 +13,7 @@ interface InputFieldProps<T extends FieldValues> {
   type: "text" | "email" | "password"; // Extendable for other types
   placeholder: string;
   register: UseFormRegister<T>;
-  error?: string;
+  error?: string | FieldError;
 }
 
 const InputField = <T extends FieldValues>({
