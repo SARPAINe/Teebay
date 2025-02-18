@@ -7,18 +7,19 @@ import {
 import { authLink } from "./links/authLink";
 import { errorLink } from "./links/errorLink";
 
-export function createApolloClient(): ApolloClient<any> {
-  // HTTP Connection to the API
-  const httpLink = new HttpLink({
-    uri: "http://localhost:4000/graphql", // Replace with your GraphQL endpoint
-    credentials: "include",
-  });
+// HTTP Connection to the API
+const httpLink = new HttpLink({
+  uri: "http://localhost:4000/graphql", // Replace with your GraphQL endpoint
+  credentials: "include",
+});
 
-  // Combine all links: authLink → errorLink → httpLink
-  const link = ApolloLink.from([authLink, errorLink, httpLink]);
+// Combine all links: authLink → errorLink → httpLink
+const link = ApolloLink.from([authLink, errorLink, httpLink]);
 
-  return new ApolloClient({
-    link,
-    cache: new InMemoryCache(),
-  });
-}
+// Create and export the Apollo Client instance
+const client = new ApolloClient({
+  link,
+  cache: new InMemoryCache(),
+});
+
+export default client;
