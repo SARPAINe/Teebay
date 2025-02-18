@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { PRODUCT_DETAILS } from "../graphql/queries";
+import Button from "../components/Button";
 
 const ProductDetail = () => {
   const { id: productId } = useParams<{ id: string }>();
@@ -38,12 +39,8 @@ const ProductDetail = () => {
       <p className="text-gray-600 mb-6">{product.description}</p>
 
       <div className="flex gap-4">
-        <button className="py-2 px-4 rounded-md bg-[#5B51F8] text-white font-semibold hover:bg-[#4842C6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-          Rent
-        </button>
-        <button className="py-2 px-4 rounded-md bg-[#5B51F8] text-white font-semibold hover:bg-[#4842C6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-          Buy
-        </button>
+        <Button type="confirm">Rent</Button>
+        <Button type="confirm">Buy</Button>
       </div>
     </div>
   );

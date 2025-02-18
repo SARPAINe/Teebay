@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/queries";
 import InputField from "../components/InputField";
+import Button from "../components/Button";
 
 // Validation schema
 const SignInSchema = z.object({
@@ -58,13 +59,9 @@ const SignIn = () => {
             register={register}
             error={errors.password?.message}
           />
-          <button
-            type="submit"
-            disabled={isSubmitting || loading}
-            className="w-full py-2 px-4 rounded-md bg-[#5B51F8] text-white font-semibold hover:bg-[#4842C6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <Button type="confirm" disabled={isSubmitting || loading}>
             {isSubmitting || loading ? "Signing in..." : "LOGIN"}
-          </button>
+          </Button>
           {error && (
             <p className="mt-1 text-sm text-red-600">{error.message}</p>
           )}

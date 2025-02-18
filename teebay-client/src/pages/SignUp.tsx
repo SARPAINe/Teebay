@@ -6,6 +6,7 @@ import { useMutation } from "@apollo/client";
 import { REGISTER_MUTATION } from "../graphql/queries";
 import InputField from "../components/InputField";
 import { toast } from "react-toastify";
+import Button from "../components/Button";
 
 // Validation schema
 const SignUpSchema = z
@@ -117,13 +118,9 @@ const SignUp = () => {
             register={register}
             error={errors.confirmPassword?.message}
           />
-          <button
-            type="submit"
-            disabled={isSubmitting || loading}
-            className="w-full py-2 px-4 rounded-md bg-[#5B51F8] text-white font-semibold hover:bg-[#4842C6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <Button type="confirm" disabled={isSubmitting || loading}>
             {isSubmitting || loading ? "Registering..." : "REGISTER"}
-          </button>
+          </Button>
           {error && (
             <p className="mt-1 text-sm text-red-600">{error.message}</p>
           )}
