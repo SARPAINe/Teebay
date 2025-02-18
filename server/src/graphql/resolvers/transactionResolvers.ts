@@ -43,7 +43,7 @@ const transactionResolvers = {
         });
       }
       if (product.creatorId === buyerId) {
-        throw new GraphQLError("You cannot buy your own product", {
+        throw new GraphQLError("You cannot buy/rent your own product", {
           extensions: { code: "BAD_USER_INPUT" },
         });
       }

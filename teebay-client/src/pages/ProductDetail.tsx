@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   GET_PRODUCT_DETAILS,
   GET_AVAILABLE_PRODUCTS,
@@ -15,6 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const ProductDetail = () => {
   const { id: productId } = useParams<{ id: string }>();
   const intProductId = parseInt(productId!, 10); // Convert id to integer
+  const navigate = useNavigate();
 
   const { loading, error, data } = useQuery(GET_PRODUCT_DETAILS, {
     variables: { id: intProductId },
@@ -25,23 +26,28 @@ const ProductDetail = () => {
     { loading: transactionLoading, error: transactionError },
   ] = useMutation(BUY_PRODUCT_MUTATION, {
     onCompleted: (data) => {
-      console.log("Product bought successfully", data);
-      toast.success("Product bought successfully");
+      const message =
+        data.createTransaction.type === "BUY"
+          ? "Product bought successfully"
+          : "Product borrowed successfully";
+      console.log(message, data);
+      toast.success(message);
+      navigate("/user/transaction");
     },
     onError: (error) => {
       console.error("Error buying product", error);
       toast.error("Error buying product: " + error.message);
     },
     update: (cache, { data: { createTransaction } }) => {
-      // Remove the bought product from the GET_AVAILABLE_PRODUCTS cache
-      const { products } = cache.readQuery({ query: GET_AVAILABLE_PRODUCTS });
-      const updatedProducts = products.filter(
-        (product) => product.id !== intProductId
-      );
-      cache.writeQuery({
-        query: GET_AVAILABLE_PRODUCTS,
-        data: { products: updatedProducts },
-      });
+      if (createTransaction.type === "BUY") {
+        // Evict the bought product from the GET_BOUGHT_PRODUCTS cache
+        cache.evict({ fieldName: "boughtProducts" });
+      } else if (createTransaction.type === "RENT") {
+        // Evict the borrowed product from the GET_BORROWED_PRODUCTS cache
+        cache.evict({ fieldName: "borrowedProducts" });
+      }
+      // Evict the product from the GET_AVAILABLE_PRODUCTS cache
+      cache.evict({ fieldName: "products" });
     },
   });
 

@@ -17,6 +17,11 @@ const Header = () => {
     onError: (error) => {
       console.error("Logout error:", error);
     },
+    update: (cache) => {
+      // cache.reset();
+      cache.evict({}); // Clear the entire cache
+      cache.gc();
+    },
   });
 
   const handleLogout = () => {
