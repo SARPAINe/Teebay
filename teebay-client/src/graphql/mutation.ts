@@ -10,6 +10,12 @@ export const LOGIN_MUTATION = gql`
   }
 `;
 
+export const LOGOUT_MUTATION = gql`
+  mutation Logout {
+    logout
+  }
+`;
+
 // GraphQL Mutation for Registering User
 export const REGISTER_MUTATION = gql`
   mutation CreateUser($input: CreateUserInput!) {

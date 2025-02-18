@@ -1,6 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAccessToken, setAccessToken } from "../utils/tokenManager";
+import { LOGOUT_MUTATION } from "../graphql/mutation";
+import { useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,10 +18,20 @@ const Header = () => {
     checkLoginStatus();
   }, []);
 
+  const [logout] = useMutation(LOGOUT_MUTATION, {
+    onCompleted: () => {
+      toast.success("Logged out successfully");
+      setAccessToken(null);
+      setIsLoggedIn(false);
+      navigate("/signin");
+    },
+    onError: (error) => {
+      console.error("Logout error:", error);
+    },
+  });
+
   const handleLogout = () => {
-    setAccessToken(null);
-    setIsLoggedIn(false);
-    navigate("/signin");
+    logout();
   };
 
   return (

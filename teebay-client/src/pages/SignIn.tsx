@@ -6,6 +6,7 @@ import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/mutation";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
+import { toast } from "react-toastify";
 
 // Validation schema
 const SignInSchema = z.object({
@@ -26,6 +27,7 @@ const SignIn = () => {
 
   const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
+      toast.success("Logged in successfully");
       localStorage.setItem("accessToken", data.login.accessToken);
       navigate("/");
     },
