@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ApolloError, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/queries";
 
 const SignInSchema = z.object({
@@ -16,7 +16,6 @@ type SignInFormData = z.infer<typeof SignInSchema>;
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
   const navigate = useNavigate();
   const {
     register,
@@ -29,17 +28,7 @@ const SignIn = () => {
   const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
       localStorage.setItem("accessToken", data.login.accessToken);
-      navigate("/products");
-    },
-    onError: (error: ApolloError) => {
-      console.log("🚀 ~ SignIn ~ error:", error.networkError);
-      const graphQLErrors = error.graphQLErrors;
-      console.log("🚀 ~ graphQLErrors:", graphQLErrors);
-      if (graphQLErrors.length > 0) {
-        setErrorMessage(graphQLErrors[0].message);
-      } else {
-        setErrorMessage("An unexpected error occurred.");
-      }
+      navigate("/");
     },
   });
 
@@ -115,8 +104,8 @@ const SignIn = () => {
           >
             {isSubmitting || loading ? "Signing in..." : "LOGIN"}
           </button>
-          {errorMessage && (
-            <p className="mt-1 text-sm text-red-600">{errorMessage}</p>
+          {error?.message && (
+            <p className="mt-1 text-sm text-red-600">{error?.message}</p>
           )}
         </form>
 

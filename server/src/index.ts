@@ -51,7 +51,7 @@ const setHttpPlugin = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  plugins: [setHttpPlugin],
+  // plugins: [setHttpPlugin],
 });
 
 async function startServer() {

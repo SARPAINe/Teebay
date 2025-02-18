@@ -18,3 +18,13 @@ export const LOGIN_MUTATION = gql`
     }
   }
 `;
+
+// GraphQL Mutation for Refresh Token
+export const REFRESH_TOKEN_MUTATION = gql`
+  mutation RefreshToken {
+    refreshToken {
+      refreshToken
+      accessToken
+    }
+  }
+`;

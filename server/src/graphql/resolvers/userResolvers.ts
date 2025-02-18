@@ -55,8 +55,13 @@ const userResolvers = {
       { prisma, res }: Context
     ) => {
       const user = await prisma.user.findUnique({ where: { email } });
-      if (!user || !(await bcrypt.compare(password, user.password))) {
-        throw new GraphQLError("Invalid credentials", {
+      if (!user) {
+        throw new GraphQLError("User not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+      if (!(await bcrypt.compare(password, user.password))) {
+        throw new GraphQLError("Invalid password", {
           extensions: { code: "UNAUTHENTICATED" },
         });
       }
