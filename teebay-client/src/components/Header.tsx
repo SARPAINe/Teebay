@@ -1,28 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getAccessToken, setAccessToken } from "../utils/tokenManager";
-import { LOGOUT_MUTATION } from "../graphql/mutation";
+import { useAuth } from "../context/AuthContext";
 import { useMutation } from "@apollo/client";
+import { LOGOUT_MUTATION } from "../graphql/mutation";
 import { toast } from "react-toastify";
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const token = await getAccessToken();
-      setIsLoggedIn(!!token);
-    };
-
-    checkLoginStatus();
-  }, []);
-
-  const [logout] = useMutation(LOGOUT_MUTATION, {
+  const [logoutMutation] = useMutation(LOGOUT_MUTATION, {
     onCompleted: () => {
+      logout();
       toast.success("Logged out successfully");
-      setAccessToken(null);
-      setIsLoggedIn(false);
       navigate("/signin");
     },
     onError: (error) => {
@@ -31,7 +20,7 @@ const Header = () => {
   });
 
   const handleLogout = () => {
-    logout();
+    logoutMutation();
   };
 
   return (

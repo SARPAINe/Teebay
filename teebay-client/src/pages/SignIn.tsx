@@ -7,6 +7,7 @@ import { LOGIN_MUTATION } from "../graphql/mutation";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 // Validation schema
 const SignInSchema = z.object({
@@ -18,6 +19,7 @@ type SignInFormData = z.infer<typeof SignInSchema>;
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const {
     register,
@@ -25,10 +27,10 @@ const SignIn = () => {
     formState: { errors, isSubmitting },
   } = useForm<SignInFormData>({ resolver: zodResolver(SignInSchema) });
 
-  const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
+  const [loginMutation, { loading, error }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
       toast.success("Logged in successfully");
-      localStorage.setItem("accessToken", data.login.accessToken);
+      login(data.login.accessToken);
       navigate("/");
     },
     onError: (error) => {
@@ -37,7 +39,7 @@ const SignIn = () => {
   });
 
   const onSubmit = (data: SignInFormData) => {
-    login({ variables: data });
+    loginMutation({ variables: data });
   };
 
   return (
