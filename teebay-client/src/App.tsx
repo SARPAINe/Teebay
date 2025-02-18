@@ -5,12 +5,14 @@ import SignUp from "./pages/SignUp";
 import TransactionPage from "./pages/TransactionPage";
 import { ToastContainer } from "react-toastify";
 import ProductDetail from "./pages/ProductDetail";
+import Header from "./components/Header"; // Import the Header component
 
 const App = () => {
   return (
     <Router>
       <div>
         <ToastContainer />
+        <Header /> {/* Include the Header component */}
         <Routes>
           <Route path="/" element={<Product />} />
           <Route path="/signin" element={<SignIn />} />
