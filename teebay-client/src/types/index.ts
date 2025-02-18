@@ -4,5 +4,5 @@ export interface ProductCardProps {
   category: string[];
   price: number;
   description: string;
-  createdAt: string;
+  createdAt?: string;
 }

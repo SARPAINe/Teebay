@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
-import { PRODUCT_DETAILS, GET_AVAILABLE_PRODUCTS } from "../graphql/queries";
+import {
+  GET_PRODUCT_DETAILS,
+  GET_AVAILABLE_PRODUCTS,
+} from "../graphql/queries";
 import { BUY_PRODUCT_MUTATION } from "../graphql/mutation";
 import Button from "../components/Button";
 import Modal from "../components/Modal";
@@ -13,7 +16,7 @@ const ProductDetail = () => {
   const { id: productId } = useParams<{ id: string }>();
   const intProductId = parseInt(productId!, 10); // Convert id to integer
 
-  const { loading, error, data } = useQuery(PRODUCT_DETAILS, {
+  const { loading, error, data } = useQuery(GET_PRODUCT_DETAILS, {
     variables: { id: intProductId },
   });
 

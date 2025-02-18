@@ -49,9 +49,11 @@ const ProductCard = ({
           </span>
         )}
       </p>
-      <p className="text-sm font-semibold">
-        Date Posted :{convertTimestampToReadableDate(createdAt)}
-      </p>
+      {createdAt && (
+        <p className="text-sm font-semibold">
+          Date Posted :{convertTimestampToReadableDate(createdAt!)}
+        </p>
+      )}
     </div>
   );
 };
