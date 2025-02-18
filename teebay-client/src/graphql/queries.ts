@@ -27,6 +27,19 @@ export const GET_PRODUCT_DETAILS = gql`
   }
 `;
 
+export const GET_USER_PRODUCTS = gql`
+  query MyProducts {
+    userAvailableProducts {
+      id
+      title
+      category
+      price
+      description
+      createdAt
+    }
+  }
+`;
+
 export const GET_BOUGHT_PRODUCTS = gql`
   query BoughtProducts {
     boughtProducts {

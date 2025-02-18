@@ -37,6 +37,12 @@ const Header = () => {
               >
                 Transactions
               </Link>
+              <Link
+                to="/user/products"
+                className="text-gray-600 hover:text-purple-600"
+              >
+                My Products
+              </Link>
               <button
                 onClick={handleLogout}
                 className="text-gray-600 hover:text-purple-600"
