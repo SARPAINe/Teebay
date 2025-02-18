@@ -37,7 +37,12 @@ const productResolvers = {
           product: true,
         },
       });
-      const products = transactions.map((transaction) => transaction.product);
+      const products = transactions.map((transaction) => {
+        console.log(transaction.endDate);
+        return { ...transaction.product, endDate: transaction.endDate };
+      });
+      console.log("🚀 ~ products ~ products:", products);
+
       return products;
     },
     lentProducts: async (_: any, __: any, { prisma, req }: Context) => {

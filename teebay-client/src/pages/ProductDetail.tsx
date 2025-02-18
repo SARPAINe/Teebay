@@ -1,11 +1,13 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
-import { GET_AVAILABLE_PRODUCTS, PRODUCT_DETAILS } from "../graphql/queries";
+import { PRODUCT_DETAILS, GET_AVAILABLE_PRODUCTS } from "../graphql/queries";
 import { BUY_PRODUCT_MUTATION } from "../graphql/mutation";
 import Button from "../components/Button";
 import Modal from "../components/Modal";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const ProductDetail = () => {
   const { id: productId } = useParams<{ id: string }>();
@@ -42,6 +44,8 @@ const ProductDetail = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"BUY" | "RENT">("BUY");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
   const handleBuyORRentProduct = (type: "BUY" | "RENT") => {
     setTransactionType(type);
@@ -52,8 +56,8 @@ const ProductDetail = () => {
     const transactionInput = {
       type: transactionType,
       productId: intProductId,
-      startDate: new Date().toISOString(), // Example start date
-      endDate: null, // Optional end date
+      startDate: startDate ? startDate.toISOString() : new Date().toISOString(), // Example start date
+      endDate: endDate ? endDate.toISOString() : null, // Optional end date
     };
 
     createTransaction({ variables: { input: transactionInput } }).catch(
@@ -115,9 +119,30 @@ const ProductDetail = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmTransaction}
-        title="Confirm Purchase"
+        title={transactionType === "BUY" ? "Confirm Purchase" : "Rental Period"}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
       >
-        Are you sure you want to buy the product?
+        {transactionType === "RENT" ? (
+          <>
+            <label className="block mb-2">From:</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date as Date)}
+              className="w-full px-4 py-2 border rounded-md"
+            />
+            <label className="block mt-4 mb-2">To:</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date as Date)}
+              className="w-full px-4 py-2 border rounded-md"
+            />
+          </>
+        ) : (
+          "Are you sure you want to buy the product?"
+        )}
       </Modal>
     </div>
   );
