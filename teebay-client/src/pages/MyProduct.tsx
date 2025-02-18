@@ -63,6 +63,7 @@ const MyProduct = () => {
             description={product.description}
             createdAt={product.createdAt}
             onDelete={handleDelete}
+            showDelete={true}
           />
         ))}
       </div>

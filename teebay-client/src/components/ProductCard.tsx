@@ -12,7 +12,8 @@ const ProductCard = ({
   description,
   createdAt,
   onDelete,
-}: ProductCardProps & { onDelete: (id: string) => void }) => {
+  showDelete = false,
+}: ProductCardProps) => {
   const navigate = useNavigate();
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -61,12 +62,14 @@ const ProductCard = ({
           Date Posted :{convertTimestampToReadableDate(createdAt!)}
         </p>
       )}
-      <button
-        className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-        onClick={handleDelete}
-      >
-        <Trash />
-      </button>
+      {showDelete && (
+        <button
+          className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+          onClick={handleDelete}
+        >
+          <Trash />
+        </button>
+      )}
     </div>
   );
 };

@@ -6,4 +6,5 @@ export interface ProductCardProps {
   description: string;
   createdAt?: string;
   onDelete?: (id: string) => void;
+  showDelete?: boolean;
 }

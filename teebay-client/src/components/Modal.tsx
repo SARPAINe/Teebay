@@ -1,6 +1,7 @@
 import React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Button from "./Button";
 
 interface ModalProps {
   isOpen: boolean;
@@ -51,18 +52,10 @@ const Modal = ({
           </div>
         )}
         <div className="flex justify-end gap-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-          >
+          <Button onClick={onClose} type="cancel">
             Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
-            Confirm
-          </button>
+          </Button>
+          <Button onClick={onConfirm}>Confirm</Button>
         </div>
       </div>
     </div>
