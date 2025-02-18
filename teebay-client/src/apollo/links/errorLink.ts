@@ -9,8 +9,8 @@ export const errorLink = onError(
     const graphqlErrorMessage = graphQLErrors?.[0]?.message;
 
     if (
-      // (networkError && (networkError as any)?.statusCode === 401) ||
-      graphqlErrorMessage === "jwt expired"
+      graphqlErrorMessage === "jwt expired" ||
+      graphqlErrorMessage === "No access token provided"
     ) {
       console.warn("[errorLink] Detected 401 Unauthorized or expired token.");
 

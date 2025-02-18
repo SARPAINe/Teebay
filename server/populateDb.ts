@@ -12,23 +12,23 @@ async function main() {
   // Create two random users
   const user1 = await prisma.user.create({
     data: {
-      email: "user1@example.com",
+      email: "user1@gmail.com",
       phone: "1234567890",
       firstName: "John",
       lastName: "Doe",
       address: "123 Main St",
-      password: await bcrypt.hash("password1", 10),
+      password: await bcrypt.hash("secret", 10),
     },
   });
 
   const user2 = await prisma.user.create({
     data: {
-      email: "user2@example.com",
+      email: "user2@gmail.com",
       phone: "0987654321",
       firstName: "Jane",
       lastName: "Smith",
       address: "456 Elm St",
-      password: await bcrypt.hash("password2", 10),
+      password: await bcrypt.hash("secret", 10),
     },
   });
 
