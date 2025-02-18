@@ -6,6 +6,8 @@ const config = {
   port: process.env.PORT ?? 4000,
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
+  accessTokeExpiry: process.env.ACCESS_TOKEN_EXPIRY ?? "5m",
+  refreshTokenExpiry: process.env.REFRESH_TOKEN_EXPIRY ?? "15m",
 };
 
 if (!config.databaseUrl) {

@@ -5,7 +5,9 @@ import { Request } from "express";
 import { GraphQLError } from "graphql";
 
 export const generateAccessToken = (userId: number): string => {
-  return jwt.sign({ userId }, config.jwtSecret!, { expiresIn: "15m" });
+  return jwt.sign({ userId }, config.jwtSecret!, {
+    expiresIn: config.accessTokeExpiry as any,
+  });
 };
 
 export const generateRefreshToken = async (
@@ -13,7 +15,7 @@ export const generateRefreshToken = async (
   prisma: PrismaClient
 ): Promise<string> => {
   const refreshToken = jwt.sign({ userId }, config.jwtSecret!, {
-    expiresIn: "7d",
+    expiresIn: config.refreshTokenExpiry as any,
   });
   await prisma.refreshToken.create({
     data: { token: refreshToken, userId },
