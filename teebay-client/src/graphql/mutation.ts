@@ -41,6 +41,21 @@ export const REFRESH_TOKEN_MUTATION = gql`
   }
 `;
 
+// GraphQL Mutation for Creating a Product
+export const CREATE_PRODUCT_MUTATION = gql`
+  mutation CreateProduct($input: CreateProductInput!) {
+    createProduct(input: $input) {
+      id
+      title
+      description
+      category
+      price
+      rentPrice
+      rentCategory
+    }
+  }
+`;
+
 // GraphQL Mutation for Buying a product
 export const BUY_PRODUCT_MUTATION = gql`
   mutation CreateTransaction($input: CreateTransactionInput!) {

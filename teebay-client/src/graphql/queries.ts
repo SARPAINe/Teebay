@@ -23,6 +23,8 @@ export const GET_PRODUCT_DETAILS = gql`
       price
       description
       createdAt
+      rentCategory
+      rentPrice
     }
   }
 `;

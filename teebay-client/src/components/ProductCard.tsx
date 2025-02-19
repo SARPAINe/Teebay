@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { ProductCardProps } from "../types";
-import { convertTimestampToReadableDate } from "../utils/helper";
+import {
+  convertTimestampToReadableDate,
+  formatCategory,
+} from "../utils/helper";
 import { useEffect, useRef, useState } from "react";
 import { Trash } from "lucide-react";
 
@@ -13,6 +16,7 @@ const ProductCard = ({
   createdAt,
   onDelete,
   showDelete = false,
+  routePath = `/products/${id}`,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   const descriptionRef = useRef<HTMLParagraphElement>(null);
@@ -30,7 +34,7 @@ const ProductCard = ({
   }, [description]);
 
   const handleClick = () => {
-    navigate(`/products/${id}`);
+    navigate(routePath);
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -44,7 +48,9 @@ const ProductCard = ({
       onClick={handleClick}
     >
       <h2 className="text-xl font-bold">{title}</h2>
-      <p className="text-sm text-gray-600">Categories: {category.join(", ")}</p>
+      <p className="text-sm text-gray-600">
+        Categories: {category.map(formatCategory).join(", ")}
+      </p>
       <p className="text-sm font-semibold">Price: ${price}</p>
       <p className="text-sm text-gray-600" ref={descriptionRef}>
         {description}{" "}

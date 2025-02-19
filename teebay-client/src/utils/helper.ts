@@ -33,3 +33,14 @@ export function convertTimestampToReadableDate(timestamp: string): string {
 
   return `${day}${ordinalSuffix} ${monthName} ${year}`;
 }
+
+export function formatCategory(input: string): string {
+  // Convert to lowercase and replace underscores with spaces
+  const formatted = input
+    .toLowerCase()
+    .replace(/_/g, " ")
+    // Capitalize the first letter of the string
+    .replace(/^\w/, (c) => c.toUpperCase());
+
+  return formatted;
+}

@@ -10,10 +10,11 @@ import {
 interface InputFieldProps<T extends FieldValues> {
   id: keyof T;
   label: string;
-  type: "text" | "email" | "password"; // Extendable for other types
+  type: React.HTMLInputTypeAttribute;
   placeholder: string;
   register: UseFormRegister<T>;
   error?: string | FieldError;
+  valueAsNumber?: boolean;
 }
 
 const InputField = <T extends FieldValues>({
@@ -23,6 +24,7 @@ const InputField = <T extends FieldValues>({
   placeholder,
   register,
   error,
+  valueAsNumber,
 }: InputFieldProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,7 +46,7 @@ const InputField = <T extends FieldValues>({
           type={inputType}
           placeholder={placeholder}
           className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5B51F8] focus:border-transparent"
-          {...register(id as Path<T>)}
+          {...register(id as Path<T>, { valueAsNumber })}
         />
         {isPasswordType && (
           <button

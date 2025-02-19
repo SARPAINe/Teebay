@@ -1,16 +1,16 @@
-import React from "react";
-
 type ButtonProps = {
   children: React.ReactNode;
   onClick?: () => void;
-  type?: "confirm" | "cancel";
+  type?: "button" | "submit" | "reset"; // Matches native button `type` values
+  variant?: "confirm" | "cancel";
   disabled?: boolean;
 };
 
 const Button = ({
   children,
   onClick,
-  type = "confirm",
+  type = "button",
+  variant = "confirm",
   disabled,
 }: ButtonProps) => {
   const baseStyles =
@@ -21,9 +21,10 @@ const Button = ({
   return (
     <button
       className={`${baseStyles} ${
-        type === "confirm" ? confirmStyles : cancelStyles
+        variant === "confirm" ? confirmStyles : cancelStyles
       }`}
       onClick={onClick}
+      type={type}
       disabled={disabled}
     >
       {children}

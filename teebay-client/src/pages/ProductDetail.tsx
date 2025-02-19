@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { formatCategory } from "../utils/helper";
 
 const ProductDetail = () => {
   const { id: productId } = useParams<{ id: string }>();
@@ -100,7 +101,7 @@ const ProductDetail = () => {
       <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
       <p className="text-gray-600 mb-2">
         <span className="font-semibold">Categories:</span>{" "}
-        {product.category.join(", ")}
+        {product.category.map(formatCategory).join(", ")}
       </p>
       <p className="text-gray-600 mb-2">
         <span className="font-semibold">Price:</span> ${product.price}
