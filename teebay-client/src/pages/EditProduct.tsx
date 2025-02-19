@@ -18,7 +18,6 @@ import { GET_PRODUCT_DETAILS, GET_USER_PRODUCTS } from "../graphql/queries";
 import { UPDATE_PRODUCT_MUTATION } from "../graphql/mutation";
 import { toast } from "react-toastify";
 import { formatCategory } from "../utils/helper";
-import { DevTool } from "@hookform/devtools";
 
 const categoriesOptions = Object.keys(CATEGORIES).map((cat) => ({
   value: cat,
@@ -223,7 +222,6 @@ const EditProduct = () => {
           <Button type="submit">Edit Product</Button>
         </div>
       </form>
-      <DevTool control={control} />
     </div>
   );
 };

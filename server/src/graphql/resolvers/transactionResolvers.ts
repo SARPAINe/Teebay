@@ -3,6 +3,7 @@ import { GraphQLError } from "graphql";
 import { CreateTransactionInput } from "../../types";
 import { TransactionType } from "@prisma/client";
 import { getAuthenticatedUserId } from "../../utils/authUtils";
+import { isoToLocalTime } from "../../utils/dateUtils";
 
 const transactionResolvers = {
   Query: {
@@ -23,6 +24,74 @@ const transactionResolvers = {
       }
       return transaction;
     },
+    excludedDates: async (
+      _: any,
+      { id }: { id: number },
+      { prisma }: Context
+    ) => {
+      const transaction = await prisma.transaction.findMany({
+        where: { productId: id, type: TransactionType.RENT },
+        select: { startDate: true, endDate: true },
+      });
+      console.log("🚀 ~ transaction:", transaction);
+      if (transaction.length === 0) {
+        throw new GraphQLError("Transaction not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+      const dates: any = [];
+      transaction.forEach(({ startDate, endDate }) => {
+        if (startDate && endDate) {
+          console.log(
+            "🚀 ~ transaction.forEach ~ startDate:",
+            typeof startDate,
+            startDate
+          );
+          dates.push({
+            startDate: startDate,
+            endDate: endDate,
+          });
+        }
+      });
+      return dates;
+    },
+    endDate: async (
+      _: any,
+      { inputStartDate, id }: { inputStartDate: string; id: number },
+      { prisma }: Context
+    ) => {
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          productId: id,
+          type: TransactionType.RENT,
+          startDate: {
+            gt: inputStartDate,
+          },
+        },
+        select: { endDate: true, startDate: true },
+      });
+      console.log("🚀 ~ transactions:", transactions);
+
+      if (transactions.length === 0) {
+        return null;
+      }
+
+      // Sort transactions by startDate
+      transactions.sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      );
+      console.log("🚀 ~ transactions:", transactions);
+
+      // Get the endDate of the transaction with the lowest startDate
+      const earliestTransaction = transactions[0];
+      if (!earliestTransaction.endDate) {
+        throw new GraphQLError("End date is null", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+      return earliestTransaction.startDate.toISOString();
+    },
   },
   Mutation: {
     createTransaction: async (
@@ -32,6 +101,30 @@ const transactionResolvers = {
     ) => {
       const buyerId = getAuthenticatedUserId(req);
       const { type, productId, startDate, endDate } = input;
+
+      const today = new Date();
+      const localTime = isoToLocalTime(today.toISOString());
+      const localISOTime = new Date(localTime).toISOString();
+
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          buyerId,
+          productId,
+          type: TransactionType.RENT,
+          endDate: {
+            gt: localISOTime,
+          },
+        },
+      });
+
+      if (transactions.length > 0) {
+        throw new GraphQLError(
+          "You already have an active rent transaction for this product",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          }
+        );
+      }
 
       const product = await prisma.product.findUnique({
         where: { id: productId },

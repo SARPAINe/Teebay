@@ -63,7 +63,11 @@ const SignIn = () => {
             register={register}
             error={errors.password?.message}
           />
-          <Button type="confirm" disabled={isSubmitting || loading}>
+          <Button
+            variant="confirm"
+            disabled={isSubmitting || loading}
+            type="submit"
+          >
             {isSubmitting || loading ? "Signing in..." : "LOGIN"}
           </Button>
           {error && (

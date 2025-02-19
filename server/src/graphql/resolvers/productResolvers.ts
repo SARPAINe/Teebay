@@ -3,6 +3,7 @@ import { GraphQLError } from "graphql";
 import { getAuthenticatedUserId } from "../../utils/authUtils";
 import { CreateProductInput, EditProductInput } from "../../types";
 import { TransactionType } from "@prisma/client";
+import { getCurrentLocalISOTime, isoToLocalTime } from "../../utils/dateUtils";
 
 const productResolvers = {
   Query: {
@@ -24,13 +25,13 @@ const productResolvers = {
     },
     borrowedProducts: async (_: any, __: any, { prisma, req }: Context) => {
       const userId = getAuthenticatedUserId(req);
-      const today = new Date();
+      const localISOTime = getCurrentLocalISOTime();
       const transactions = await prisma.transaction.findMany({
         where: {
           buyerId: userId,
           type: TransactionType.RENT,
           endDate: {
-            gt: today,
+            gt: localISOTime,
           },
         },
         include: {
@@ -47,13 +48,14 @@ const productResolvers = {
     },
     lentProducts: async (_: any, __: any, { prisma, req }: Context) => {
       const userId = getAuthenticatedUserId(req);
-      const today = new Date();
+      const localISOTime = getCurrentLocalISOTime();
+
       const transactions = await prisma.transaction.findMany({
         where: {
           product: { owner: userId },
           type: TransactionType.RENT,
           endDate: {
-            gt: today,
+            gt: localISOTime,
           },
         },
         include: {

@@ -95,3 +95,18 @@ export const GET_LENT_PRODUCTS = gql`
     }
   }
 `;
+
+export const GET_EXCLUDED_DATE_RANGES = gql`
+  query ExcludedDates($id: Int!) {
+    excludedDates(id: $id) {
+      startDate
+      endDate
+    }
+  }
+`;
+
+export const GET_END_DATE = gql`
+  query EndDate($id: Int!, $inputStartDate: String!) {
+    endDate(id: $id, inputStartDate: $inputStartDate)
+  }
+`;

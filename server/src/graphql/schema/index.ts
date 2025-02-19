@@ -48,7 +48,8 @@ const typeDefs = `#graphql
 
     enum RentCategory{
         DAILY
-        HOURLY}
+        HOURLY
+    }
 
     enum TransactionType {
         BUY
@@ -89,6 +90,11 @@ const typeDefs = `#graphql
         endDate: String
     }
 
+    type DateRange {
+        startDate: String!
+        endDate: String!
+    }
+
     type Query {
         users: [User!]
         user(id: Int!): User
@@ -101,6 +107,8 @@ const typeDefs = `#graphql
         product(id: Int!): Product
         transactions: [Transaction!]!
         transaction(id: Int!): Transaction
+        excludedDates(id: Int!): [DateRange!]
+        endDate(id:Int!,inputStartDate: String!): String
     }
 
     type Mutation {

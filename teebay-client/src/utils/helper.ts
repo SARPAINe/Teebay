@@ -1,4 +1,4 @@
-export function convertTimestampToReadableDate(timestamp: string): string {
+export const convertTimestampToReadableDate = (timestamp: string): string => {
   const date = new Date(parseInt(timestamp, 10)); // Convert the string timestamp to a number
   const day = date.getUTCDate();
   const month = date.getUTCMonth(); // Months are 0-indexed in JavaScript
@@ -32,9 +32,9 @@ export function convertTimestampToReadableDate(timestamp: string): string {
   const monthName = monthNames[month];
 
   return `${day}${ordinalSuffix} ${monthName} ${year}`;
-}
+};
 
-export function formatCategory(input: string): string {
+export const formatCategory = (input: string): string => {
   // Convert to lowercase and replace underscores with spaces
   const formatted = input
     .toLowerCase()
@@ -43,4 +43,23 @@ export function formatCategory(input: string): string {
     .replace(/^\w/, (c) => c.toUpperCase());
 
   return formatted;
-}
+};
+
+export const adjustToLocalTime = (date: Date | null, isEndOfDay: boolean) => {
+  if (!date) return null;
+  const adjustedDate = new Date(date);
+  adjustedDate.setHours(
+    isEndOfDay ? 23 : 0,
+    isEndOfDay ? 59 : 0,
+    isEndOfDay ? 59 : 0,
+    999
+  );
+  // Convert to Bangladeshi time (UTC+6)
+  adjustedDate.setUTCHours(adjustedDate.getUTCHours() + 6);
+  return adjustedDate.toISOString();
+};
+
+export const convertEpochToISO = (epoch: number) => {
+  const date = new Date(epoch);
+  return date.toISOString();
+};
