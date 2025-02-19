@@ -15,6 +15,7 @@ interface InputFieldProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   error?: string | FieldError;
   valueAsNumber?: boolean;
+  step?: string;
 }
 
 const InputField = <T extends FieldValues>({
@@ -25,6 +26,7 @@ const InputField = <T extends FieldValues>({
   register,
   error,
   valueAsNumber,
+  step,
 }: InputFieldProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -47,6 +49,7 @@ const InputField = <T extends FieldValues>({
           placeholder={placeholder}
           className="w-full px-4 py-2 rounded-md bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5B51F8] focus:border-transparent"
           {...register(id as Path<T>, { valueAsNumber })}
+          step={step}
         />
         {isPasswordType && (
           <button

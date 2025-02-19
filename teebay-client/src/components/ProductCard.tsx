@@ -17,6 +17,8 @@ const ProductCard = ({
   onDelete,
   showDelete = false,
   routePath = `/products/${id}`,
+  rentPrice,
+  rentCategory,
 }: ProductCardProps) => {
   const navigate = useNavigate();
   const descriptionRef = useRef<HTMLParagraphElement>(null);
@@ -36,6 +38,7 @@ const ProductCard = ({
   const handleClick = () => {
     navigate(routePath);
   };
+  console.log("🚀 ~ rentPrice:", rentPrice);
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -51,7 +54,9 @@ const ProductCard = ({
       <p className="text-sm text-gray-600">
         Categories: {category.map(formatCategory).join(", ")}
       </p>
-      <p className="text-sm font-semibold">Price: ${price}</p>
+      <p className="text-sm font-semibold">{`Price: ${price} ${
+        rentPrice ? `| Rent: $${rentPrice} ${rentCategory?.toLowerCase()}` : ""
+      }`}</p>
       <p className="text-sm text-gray-600" ref={descriptionRef}>
         {description}{" "}
         {isTruncated && (

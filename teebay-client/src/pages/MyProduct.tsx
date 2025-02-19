@@ -46,6 +46,7 @@ const MyProduct = () => {
   }
 
   const products = data.userAvailableProducts;
+  console.log("🚀 ~ MyProduct ~ products:", products);
 
   const handleDelete = (id: string) => {
     setSelectedProductId(id);
@@ -79,6 +80,8 @@ const MyProduct = () => {
             onDelete={handleDelete}
             showDelete={true}
             routePath={`/products/edit/${product.id}`}
+            rentPrice={product.rentPrice}
+            rentCategory={product.rentCategory}
           />
         ))}
       </div>

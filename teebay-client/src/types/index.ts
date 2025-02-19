@@ -8,6 +8,8 @@ export interface ProductCardProps {
   onDelete?: (id: string) => void;
   showDelete?: boolean;
   routePath?: string;
+  rentPrice?: number;
+  rentCategory?: string;
 }
 
 export enum CATEGORIES {

@@ -56,6 +56,21 @@ export const CREATE_PRODUCT_MUTATION = gql`
   }
 `;
 
+//GraphQL Mutation for Updating a Product
+export const UPDATE_PRODUCT_MUTATION = gql`
+  mutation UpdateProduct($id: ID!, $editInput: EditProductInput!) {
+    editProduct(id: $id, editInput: $editInput) {
+      id
+      title
+      description
+      category
+      price
+      rentPrice
+      rentCategory
+    }
+  }
+`;
+
 // GraphQL Mutation for Buying a product
 export const BUY_PRODUCT_MUTATION = gql`
   mutation CreateTransaction($input: CreateTransactionInput!) {
