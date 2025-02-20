@@ -1,5 +1,5 @@
 # Base image
-FROM node:18-alpine
+FROM node:latest
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -13,6 +13,3 @@ COPY . .
 
 # Expose port 5173
 EXPOSE 5173
-
-# Start the Vite development server
-CMD ["npm", "run", "dev", "--", "--host"]

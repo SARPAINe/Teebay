@@ -9,8 +9,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: teebay
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -27,12 +27,13 @@ services:
       - REFRESH_TOKEN_EXPIRY=1d
     volumes:
       - ./server:/usr/src/app
+      - /usr/src/app/node_modules
     working_dir: /usr/src/app
     ports:
       - "4000:4000"
     depends_on:
       - postgres
-    command: sh -c "npx prisma db push --schema=.//src/prisma/schema.prisma && pm2-runtime start dist/index.js --env development"
+    command: sh -c "npx prisma db push --schema=./src/prisma/schema.prisma && npm run dev"
     networks:
       - teebay-network
   client:
