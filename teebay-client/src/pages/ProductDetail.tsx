@@ -73,7 +73,7 @@ const ProductDetail = () => {
     },
     onError: (error) => {
       console.error("Error buying product", error);
-      toast.error("Error buying product: " + error.message);
+      toast.error("Error buying/renting product: " + error.message);
     },
     update: (cache, { data: { createTransaction } }) => {
       if (createTransaction.type === "BUY") {
@@ -109,8 +109,8 @@ const ProductDetail = () => {
 
     createTransaction({ variables: { input: transactionInput } }).catch(
       (error) => {
-        console.error("Error buying product", transactionError?.message);
-        toast.error("Error buying product: " + transactionError?.message);
+        console.error("Error buying product", error?.message);
+        toast.error("Error buying product: " + error?.message);
       }
     );
 
@@ -234,6 +234,7 @@ const ProductDetail = () => {
                   ? dateLimiter
                   : new Date(new Date().setMonth(new Date().getMonth() + 1))
               }
+              minDate={startDate?.toISOString() ? startDate : new Date()}
             />
           </>
         ) : (
