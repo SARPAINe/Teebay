@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: teebay-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: teebay
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - teebay-network
+  server:
+    build: ./server
+    container_name: teebay-server
+    environment:
+      - PORT=4000
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/teebay
+      - JWT_SECRET=secret
+      - NODE_ENV=development
+      - ACCESS_TOKEN_EXPIRY=15m
+      - REFRESH_TOKEN_EXPIRY=1d
+    volumes:
+      - ./server:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    command: sh -c "npx prisma db push --schema=.//src/prisma/schema.prisma && pm2-runtime start dist/index.js --env development"
+    networks:
+      - teebay-network
+  client:
+    build:
+      context: ./teebay-client
+    container_name: teebay-client
+    volumes:
+      - ./teebay-client:/usr/src/app
+      - /usr/src/app/node_modules
+    working_dir: /usr/src/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+    networks:
+      - teebay-network
+networks:
+  teebay-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
