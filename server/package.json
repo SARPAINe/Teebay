@@ -6,7 +6,8 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/index.js",
-    "populate-db": "ts-node populateDb.ts"
+    "populate-db": "ts-node populateDb.ts",
+    "clear-db": "ts-node clearDb.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
