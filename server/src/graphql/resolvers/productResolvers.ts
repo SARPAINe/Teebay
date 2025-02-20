@@ -3,7 +3,7 @@ import { GraphQLError } from "graphql";
 import { getAuthenticatedUserId } from "../../utils/authUtils";
 import { CreateProductInput, EditProductInput } from "../../types";
 import { TransactionType } from "@prisma/client";
-import { getCurrentLocalISOTime, isoToLocalTime } from "../../utils/dateUtils";
+import { getCurrentLocalISOTime } from "../../utils/dateUtils";
 
 const productResolvers = {
   Query: {
@@ -182,6 +182,27 @@ const productResolvers = {
           extensions: { code: "FORBIDDEN" },
         });
       }
+      const localISOTime = getCurrentLocalISOTime();
+
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          productId,
+          type: TransactionType.RENT,
+          endDate: {
+            gt: localISOTime,
+          },
+        },
+      });
+
+      if (transactions.length > 0) {
+        throw new GraphQLError(
+          "Cannot delete product with active rent transactions",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          }
+        );
+      }
+
       const deletedProduct = await prisma.product.delete({
         where: { id: productId },
       });
