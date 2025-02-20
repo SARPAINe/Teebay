@@ -14,11 +14,15 @@ const MyProduct = () => {
   const [deleteProduct] = useMutation(DELETE_PRODUCT_MUTATION, {
     onCompleted: () => {
       toast.success("Product deleted successfully");
-      refetch();
       setModalOpen(false);
+      refetch();
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    update: (cache, { data }) => {
+      cache.evict({ fieldName: "products" });
+      cache.gc();
     },
   });
 

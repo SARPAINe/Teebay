@@ -15,7 +15,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@apollo/client";
 import { CREATE_PRODUCT_MUTATION } from "../graphql/mutation";
-import { GET_USER_PRODUCTS } from "../graphql/queries";
+import { GET_AVAILABLE_PRODUCTS, GET_USER_PRODUCTS } from "../graphql/queries";
 import { toast } from "react-toastify";
 
 const categoryOptions = Object.keys(CATEGORIES).map((cat) => ({
@@ -72,7 +72,10 @@ const CreateProduct = () => {
   const navigate = useNavigate();
 
   const [createProduct] = useMutation(CREATE_PRODUCT_MUTATION, {
-    refetchQueries: [{ query: GET_USER_PRODUCTS }],
+    refetchQueries: [
+      { query: GET_USER_PRODUCTS },
+      { query: GET_AVAILABLE_PRODUCTS },
+    ],
     onCompleted: () => {
       toast.success("Product created successfully");
       navigate("/user/products");

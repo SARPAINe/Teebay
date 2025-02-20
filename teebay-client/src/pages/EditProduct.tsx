@@ -14,7 +14,11 @@ import {
 } from "../types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GET_PRODUCT_DETAILS, GET_USER_PRODUCTS } from "../graphql/queries";
+import {
+  GET_AVAILABLE_PRODUCTS,
+  GET_PRODUCT_DETAILS,
+  GET_USER_PRODUCTS,
+} from "../graphql/queries";
 import { UPDATE_PRODUCT_MUTATION } from "../graphql/mutation";
 import { toast } from "react-toastify";
 import { formatCategory } from "../utils/helper";
@@ -89,7 +93,10 @@ const EditProduct = () => {
   });
 
   const [editProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
-    refetchQueries: [{ query: GET_USER_PRODUCTS }],
+    refetchQueries: [
+      { query: GET_USER_PRODUCTS },
+      { query: GET_AVAILABLE_PRODUCTS },
+    ],
     onCompleted: () => {
       toast.success("Product updated successfully");
       navigate("/user/products");
