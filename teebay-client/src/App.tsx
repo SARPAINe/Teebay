@@ -9,6 +9,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Header from "./components/Header";
 import CreateProduct from "./pages/CreateProduct";
 import EditProduct from "./pages/EditProduct";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/user/products" element={<MyProduct />} />{" "}
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/products/edit/:id" element={<EditProduct />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>

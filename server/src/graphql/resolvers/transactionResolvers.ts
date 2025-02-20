@@ -3,7 +3,7 @@ import { GraphQLError } from "graphql";
 import { CreateTransactionInput } from "../../types";
 import { TransactionType } from "@prisma/client";
 import { getAuthenticatedUserId } from "../../utils/authUtils";
-import { isoToLocalTime } from "../../utils/dateUtils";
+import { getCurrentLocalISOTime, isoToLocalTime } from "../../utils/dateUtils";
 
 const transactionResolvers = {
   Query: {
@@ -97,9 +97,7 @@ const transactionResolvers = {
       const buyerId = getAuthenticatedUserId(req);
       const { type, productId, startDate, endDate } = input;
 
-      const today = new Date();
-      const localTime = isoToLocalTime(today.toISOString());
-      const localISOTime = new Date(localTime).toISOString();
+      const localISOTime = getCurrentLocalISOTime();
 
       const transactions = await prisma.transaction.findMany({
         where: {
