@@ -118,7 +118,11 @@ const SignUp = () => {
             register={register}
             error={errors.confirmPassword?.message}
           />
-          <Button variant="confirm" disabled={isSubmitting || loading}>
+          <Button
+            variant="confirm"
+            disabled={isSubmitting || loading}
+            type="submit"
+          >
             {isSubmitting || loading ? "Registering..." : "REGISTER"}
           </Button>
           {error && (

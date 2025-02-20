@@ -42,11 +42,6 @@ const transactionResolvers = {
       const dates: any = [];
       transaction.forEach(({ startDate, endDate }) => {
         if (startDate && endDate) {
-          console.log(
-            "🚀 ~ transaction.forEach ~ startDate:",
-            typeof startDate,
-            startDate
-          );
           dates.push({
             startDate: startDate,
             endDate: endDate,
@@ -116,6 +111,7 @@ const transactionResolvers = {
           },
         },
       });
+      console.log("🚀 ~ transactions:", transactions);
 
       if (transactions.length > 0) {
         throw new GraphQLError(
