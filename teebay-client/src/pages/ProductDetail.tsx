@@ -38,6 +38,7 @@ const ProductDetail = () => {
     error: dateRangeError,
     data: dateRangeData,
   } = useQuery(GET_EXCLUDED_DATE_RANGES, {
+    fetchPolicy: "network-only",
     variables: { id: intProductId },
   });
   const {
@@ -45,6 +46,7 @@ const ProductDetail = () => {
     error: endDateDataError,
     loading: endDateDataLoading,
   } = useQuery(GET_END_DATE, {
+    fetchPolicy: "network-only",
     variables: { id: intProductId, inputStartDate: startDate?.toISOString() },
     skip: !startDate,
     onCompleted: (data) => {
@@ -106,6 +108,21 @@ const ProductDetail = () => {
       "🚀 ~ handleConfirmTransaction ~ transactionInput:",
       transactionInput
     );
+    if (
+      (dateRangeError || endDateDataError) &&
+      transactionInput.type === "RENT"
+    ) {
+      console.log(
+        "🚀 ~ handleConfirmTransaction ~ dateRangeError:",
+        dateRangeError
+      );
+      if (dateRangeError)
+        toast.error("Error fetching excluded dates: " + dateRangeError);
+      if (endDateDataError)
+        toast.error("Error fetching end date: " + endDateDataError);
+      setIsModalOpen(false);
+      return;
+    }
 
     createTransaction({ variables: { input: transactionInput } }).catch(
       (error) => {

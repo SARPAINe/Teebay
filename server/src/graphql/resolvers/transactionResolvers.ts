@@ -34,10 +34,8 @@ const transactionResolvers = {
         select: { startDate: true, endDate: true },
       });
       console.log("🚀 ~ transaction:", transaction);
-      if (transaction.length === 0) {
-        throw new GraphQLError("Transaction not found", {
-          extensions: { code: "NOT_FOUND" },
-        });
+      if (!transaction) {
+        return [];
       }
       const dates: any = [];
       transaction.forEach(({ startDate, endDate }) => {
