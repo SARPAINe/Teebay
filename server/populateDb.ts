@@ -128,13 +128,18 @@ async function main() {
 
   // User1 borrows 1 product from User2
   const user1BorrowsProductFromUser2 = user2Products[1];
+  const user1BorrowStartDate = new Date();
+  const user1BorrowEndDate = new Date(user1BorrowStartDate);
+  user1BorrowStartDate.setHours(0, 0, 0, 0);
+  user1BorrowEndDate.setDate(user1BorrowEndDate.getDate() + 7); // 1 week rental
+  user1BorrowEndDate.setHours(23, 59, 59, 999);
   await prisma.transaction.create({
     data: {
       type: TransactionType.RENT,
       productId: user1BorrowsProductFromUser2.id,
       buyerId: user1.id,
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week rental
+      startDate: user1BorrowStartDate.toISOString(),
+      endDate: user1BorrowEndDate.toISOString(), // 1 week rental
     },
   });
 
@@ -155,13 +160,18 @@ async function main() {
 
   // User2 borrows 1 product from User1
   const user2BorrowsProductFromUser1 = user1Products[1];
+  const user2BorrowStartDate = new Date();
+  const user2BorrowEndDate = new Date(user2BorrowStartDate);
+  user2BorrowStartDate.setHours(0, 0, 0, 0);
+  user2BorrowEndDate.setDate(user2BorrowEndDate.getDate() + 7); // 1 week rental
+  user2BorrowEndDate.setHours(23, 59, 59, 999);
   await prisma.transaction.create({
     data: {
       type: TransactionType.RENT,
       productId: user2BorrowsProductFromUser1.id,
       buyerId: user2.id,
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week rental
+      startDate: user2BorrowStartDate.toISOString(),
+      endDate: user2BorrowEndDate.toISOString(), // 1 week rental
     },
   });
 
